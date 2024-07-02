@@ -65,14 +65,22 @@ namespace roslynplay
 
             Console.WriteLine("finding usages");
 
-            var methodSymbol = typeSymbol.GetMembers().Where(m => m.Name == methodName).Single();
+            var members = typeSymbol.GetMembers().Where(m => m.Name == methodName).ToList();
+            if (!members.Any())
+            {
+                throw new InvalidOperationException($"Couldn't find member '{methodName}' in {typeName}");
+            }
 
-            await TraceCalls(solution, methodSymbol, exclude: ".Tests.");
+            foreach (var member in members)
+            {
+                Console.WriteLine($"Traces of {member}");
+                await TraceCalls(solution, member, exclude: ".Tests.");
+            }
         }
 
         private static async Task TraceCalls(Solution solution, ISymbol symbol, int depth=0, string? exclude = null)
         {
-            if (depth > 10)
+            if (depth > 20)
             {
                 throw new InvalidOperationException("too deep!");
             }
