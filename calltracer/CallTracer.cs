@@ -42,9 +42,16 @@ namespace roslynplay
             var project = solution.Projects.Single(x => x.Name == projname);
             var document = project.Documents.Single(x => x.Name == filename);
             var symbol = await SymbolFinder.FindSymbolAtPositionAsync(document, position);
-            Console.WriteLine($"foud symbol: {symbol}. Calls:");
+            Console.WriteLine($"found symbol: {symbol}. Calls:");
 
-            await TraceCalls(solution, symbol);
+            // await TraceCalls(solution, symbol);
+            var root = new CallTraceNode(symbol, null);
+            await TraceCalls2(solution, root, exclude: ".Tests.");
+            do
+            {
+                Console.WriteLine(root.Symbol);
+                root = root.Callers.FirstOrDefault();
+            } while (root != null);
         }
 
         public static async Task TraceCallsTo(string slnFile, string fqMethodName)

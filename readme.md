@@ -31,8 +31,9 @@ dotnet run find roslynplay.csproj Finder.cs 508
 ```
 
 todo
+- reverse trace
+- add exclude args to tracer (exclude kai.integration)
+- grep first lines only (entry points)
+- find other call/overrides
+    - any way to find all overrides?
 - detect recursive methods, prevent infinite recursion
-- later: symbolfinder:
-    - reverse trace
-    - eliminate dupes
-    - show project(s) of entrypoints
