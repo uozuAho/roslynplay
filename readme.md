@@ -14,6 +14,10 @@ dotnet run ../roslynplay.sln roslynplay.CallTracer.TraceCallsTo
 
 # works with external types too:
 dotnet run ../roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered
+
+# extension types are found in their namespaces:
+dotnet run ../roslynplay.sln mylib.MyStringExtensions.AddChar  # works
+dotnet run ../roslynplay.sln System.String.AddChar             # String.AddChar not found
 ```
 
 todo
