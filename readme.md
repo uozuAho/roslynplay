@@ -14,6 +14,7 @@ dotnet run ../roslynplay.sln roslynplay.CallTracer.TraceCallsTo
 
 # works with external types too:
 dotnet run ../roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered
+dotnet run ../roslynplay.sln MoreLinq.MoreEnumerable.Choose
 
 # extension types are found in their namespaces:
 dotnet run ../roslynplay.sln mylib.MyStringExtensions.AddChar  # works
