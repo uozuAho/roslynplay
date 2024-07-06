@@ -31,7 +31,7 @@ dotnet run find roslynplay.csproj Finder.cs 508
 ```
 
 todo
-- reverse trace
+- replace all with tracecalls2
 - add exclude args to tracer (exclude kai.integration)
 - grep first lines only (entry points)
 - find other call/overrides

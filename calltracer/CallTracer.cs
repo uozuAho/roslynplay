@@ -44,15 +44,33 @@ namespace roslynplay
             var symbol = await SymbolFinder.FindSymbolAtPositionAsync(document, position);
             Console.WriteLine($"found symbol: {symbol}. Calls:");
 
-            // await TraceCalls(solution, symbol);
-            var root = new CallTraceNode(symbol, null);
+            var root = new CallTraceNode(symbol);
             await TraceCalls2(solution, root, exclude: ".Tests.");
-            do
+            var entrypoints = FindEntryPoints(root).ToList();
+            foreach (var entrypoint in entrypoints)
             {
-                Console.WriteLine(root.Symbol);
-                root = root.Callers.FirstOrDefault();
-            } while (root != null);
+                PrintChildCallTrace(entrypoint);
+            }
         }
+
+        private static void PrintChildCallTrace(CallTraceNode node, int indent = 0)
+        {
+            var indentStr = new string(' ', indent);
+            Console.WriteLine($"{indentStr}{node.Symbol}");
+            if (node.Call != null)
+                PrintChildCallTrace(node.Call, indent + 2);
+        }
+
+        private static IEnumerable<CallTraceNode> FindEntryPoints(CallTraceNode root)
+        {
+            if (root.Callers.Count == 0)
+                yield return root;
+            foreach (var node in root.Callers.SelectMany(FindEntryPoints))
+            {
+                yield return node;
+            }
+        }
+
 
         public static async Task TraceCallsTo(string slnFile, string fqMethodName)
         {
@@ -184,7 +202,7 @@ namespace roslynplay
         class CallTraceNode
         {
             public ISymbol Symbol { get; init; }
-            public CallTraceNode Calls { get; }
+            public CallTraceNode? Call { get; }
             public List<CallTraceNode> Callers { get; set; } = new();
 
             private CallTraceNode()
@@ -192,10 +210,10 @@ namespace roslynplay
                 throw new InvalidOperationException("don't call this");
             }
 
-            public CallTraceNode(ISymbol symbol, CallTraceNode calls)
+            public CallTraceNode(ISymbol symbol, CallTraceNode? call = null)
             {
                 Symbol = symbol;
-                Calls = calls;
+                Call = call;
             }
         }
     }
