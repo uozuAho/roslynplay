@@ -44,13 +44,24 @@ namespace roslynplay
             var symbol = await SymbolFinder.FindSymbolAtPositionAsync(document, position);
             Console.WriteLine($"found symbol: {symbol}. Calls:");
 
-            var root = new CallTraceNode(symbol);
-            await TraceCalls2(solution, root, exclude: ".Tests.");
+            var root = await BuildCallTree(symbol, solution);
+            PrintEntrypointTraces(root);
+        }
+
+        private static void PrintEntrypointTraces(CallTraceNode root)
+        {
             var entrypoints = FindEntryPoints(root).ToList();
             foreach (var entrypoint in entrypoints)
             {
                 PrintChildCallTrace(entrypoint);
             }
+        }
+
+        private static async Task<CallTraceNode> BuildCallTree(ISymbol symbol, Solution solution)
+        {
+            var root = new CallTraceNode(symbol);
+            await TraceCalls(solution, root, exclude: ".Tests.");
+            return root;
         }
 
         private static void PrintChildCallTrace(CallTraceNode node, int indent = 0)
@@ -96,7 +107,8 @@ namespace roslynplay
             foreach (var member in members)
             {
                 Console.WriteLine($"Traces of {member}");
-                await TraceCalls(solution, member, exclude: ".Tests.");
+                var tree = await BuildCallTree(member, solution);
+                PrintEntrypointTraces(tree);
             }
         }
 
@@ -141,25 +153,7 @@ namespace roslynplay
             throw new InvalidOperationException($"Couldn't find type {typeName}");
         }
 
-        private static async Task TraceCalls(Solution solution, ISymbol symbol, int depth=0, string? exclude = null)
-        {
-            if (depth > 20)
-            {
-                throw new InvalidOperationException("too deep!");
-            }
-
-            var callers = await SymbolFinder.FindCallersAsync(symbol, solution);
-            var indent = new string(' ', depth * 2);
-
-            foreach (var caller in callers)
-            {
-                if (ExcludeSymbol(caller.CallingSymbol, exclude)) continue;
-                Console.WriteLine($"{indent}{caller.CallingSymbol}");
-                await TraceCalls(solution, caller.CallingSymbol, depth + 1, exclude);
-            }
-        }
-
-        private static async Task TraceCalls2(
+        private static async Task TraceCalls(
             Solution solution,
             CallTraceNode traceNode,
             int depth = 0,
@@ -175,7 +169,7 @@ namespace roslynplay
                     continue;
                 var callingNode = new CallTraceNode(caller.CallingSymbol, traceNode);
                 traceNode.Callers.Add(callingNode);
-                await TraceCalls2(solution, callingNode, depth + 1, exclude);
+                await TraceCalls(solution, callingNode, depth + 1, exclude);
             }
         }
 
@@ -199,22 +193,11 @@ namespace roslynplay
             return false;
         }
 
-        class CallTraceNode
+        private class CallTraceNode(ISymbol symbol, CallTraceNode? call = null)
         {
-            public ISymbol Symbol { get; init; }
-            public CallTraceNode? Call { get; }
-            public List<CallTraceNode> Callers { get; set; } = new();
-
-            private CallTraceNode()
-            {
-                throw new InvalidOperationException("don't call this");
-            }
-
-            public CallTraceNode(ISymbol symbol, CallTraceNode? call = null)
-            {
-                Symbol = symbol;
-                Call = call;
-            }
+            public ISymbol Symbol { get; init; } = symbol;
+            public CallTraceNode? Call { get; } = call;
+            public List<CallTraceNode> Callers { get; set; } = [];
         }
     }
 }
