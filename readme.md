@@ -9,7 +9,10 @@ Example usages
 ```sh
 cd calltracer
 ## TRACE CALLS
+# by fully qualified method name
 dotnet run trace ../roslynplay.sln roslynplay.CallTracer.TraceCallsTo
+# by sln, project, file, character position
+dotnet run trace ../roslynplay.sln roslynplay CallTracer.cs 871
 
 # works with external types too:
 dotnet run trace ../roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered

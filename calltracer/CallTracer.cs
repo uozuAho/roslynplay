@@ -13,14 +13,38 @@ namespace roslynplay
     {
         public static async Task RunFromArgs(string[] args)
         {
-            if (args.Length != 2)
+            if (args.Length == 2)
             {
-                Console.WriteLine("Usage: dotnet run <sln file path> <FQ method>");
-            }
-            var sln = args[0];
-            var fqMethod = args[1];
+                var sln = args[0];
+                var fqMethod = args[1];
 
-            await TraceCallsTo(sln, fqMethod);
+                await TraceCallsTo(sln, fqMethod);
+            }
+            if (args.Length == 4)
+            {
+                var sln = args[0];
+                var projname = args[1];
+                var filename = args[2];
+                var position = int.Parse(args[3]);
+
+                await TraceCallsTo(sln, projname, filename, position);
+            }
+        }
+
+        public static async Task TraceCallsTo(string slnFile, string projname, string filename, int position)
+        {
+            Console.WriteLine("loading msbuild");
+            var workspace = LoadMsBuild();
+
+            Console.WriteLine("loading solution");
+            var solution = await workspace.OpenSolutionAsync(slnFile);
+
+            var project = solution.Projects.Single(x => x.Name == projname);
+            var document = project.Documents.Single(x => x.Name == filename);
+            var symbol = await SymbolFinder.FindSymbolAtPositionAsync(document, position);
+            Console.WriteLine($"foud symbol: {symbol}. Calls:");
+
+            await TraceCalls(solution, symbol);
         }
 
         public static async Task TraceCallsTo(string slnFile, string fqMethodName)
@@ -30,21 +54,7 @@ namespace roslynplay
             var methodName = nameParts[^1];
 
             Console.WriteLine("loading msbuild");
-            if (!MSBuildLocator.IsRegistered)
-            {
-                var instances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
-                MSBuildLocator.RegisterInstance(instances.OrderByDescending(x => x.Version).First());
-            }
-
-            var workspace = MSBuildWorkspace.Create();
-            workspace.SkipUnrecognizedProjects = true;
-            workspace.WorkspaceFailed += (sender, args) =>
-            {
-                if (args.Diagnostic.Kind == WorkspaceDiagnosticKind.Failure)
-                {
-                    Console.Error.WriteLine(args.Diagnostic.Message);
-                }
-            };
+            var workspace = LoadMsBuild();
 
             Console.WriteLine("loading solution");
             var solution = await workspace.OpenSolutionAsync(slnFile);
@@ -63,6 +73,27 @@ namespace roslynplay
                 Console.WriteLine($"Traces of {member}");
                 await TraceCalls(solution, member, exclude: ".Tests.");
             }
+        }
+
+        private static MSBuildWorkspace LoadMsBuild()
+        {
+            if (!MSBuildLocator.IsRegistered)
+            {
+                var instances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
+                MSBuildLocator.RegisterInstance(instances.OrderByDescending(x => x.Version).First());
+            }
+
+            var workspace = MSBuildWorkspace.Create();
+            workspace.SkipUnrecognizedProjects = true;
+            workspace.WorkspaceFailed += (sender, args) =>
+            {
+                if (args.Diagnostic.Kind == WorkspaceDiagnosticKind.Failure)
+                {
+                    Console.Error.WriteLine(args.Diagnostic.Message);
+                }
+            };
+
+            return workspace;
         }
 
         private static async Task<INamedTypeSymbol> FindTypeSymbol(string typeName, Solution solution)
