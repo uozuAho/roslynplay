@@ -4,21 +4,27 @@ Little project to learn about roslyn & related tools.
 
 Goal: find all paths to a given method call, from all program entry points.
 
-Usage: dotnet run <sln file> <fully qualified method name (namespace.type.method)>
-
-For example:
+Example usages
 
 ```sh
 cd calltracer
-dotnet run ../roslynplay.sln roslynplay.CallTracer.TraceCallsTo
+## TRACE CALLS
+dotnet run trace ../roslynplay.sln roslynplay.CallTracer.TraceCallsTo
 
 # works with external types too:
-dotnet run ../roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered
-dotnet run ../roslynplay.sln MoreLinq.MoreEnumerable.Choose
+dotnet run trace ../roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered
+dotnet run trace ../roslynplay.sln MoreLinq.MoreEnumerable.Choose
 
 # extension types are found in their namespaces:
-dotnet run ../roslynplay.sln mylib.MyStringExtensions.AddChar  # works
-dotnet run ../roslynplay.sln System.String.AddChar             # String.AddChar not found
+dotnet run trace ../roslynplay.sln mylib.MyStringExtensions.AddChar  # works
+dotnet run trace ../roslynplay.sln System.String.AddChar             # String.AddChar not found
+
+## FIND SYMBOLS
+dotnet run find roslynplay.csproj Program.cs 198  # 198 = character position
+> roslynplay.CallTracer.RunFromArgs(string[])
+
+dotnet run find roslynplay.csproj Finder.cs 508
+> System.Console.WriteLine(object?)
 ```
 
 todo
