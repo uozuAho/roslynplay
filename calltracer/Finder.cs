@@ -38,7 +38,7 @@ namespace roslynplay
             };
 
             var project = await workspace.OpenProjectAsync(projectPath);
-            var doc = project.Documents.Single(x => x.FilePath.Contains(sourcePath));
+            var doc = project.Documents.Single(x => x.FilePath != null && x.FilePath.Contains(sourcePath));
             var symbol = await SymbolFinder.FindSymbolAtPositionAsync(doc, position);
 
             if (symbol == null) throw new InvalidOperationException("Couldn't find it");

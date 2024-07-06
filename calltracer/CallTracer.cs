@@ -89,7 +89,8 @@ namespace roslynplay
             {
                 if (args.Diagnostic.Kind == WorkspaceDiagnosticKind.Failure)
                 {
-                    Console.Error.WriteLine(args.Diagnostic.Message);
+                    // todo: show these with verbose option
+                    // Console.Error.WriteLine(args.Diagnostic.Message);
                 }
             };
 
@@ -127,18 +128,7 @@ namespace roslynplay
 
             foreach (var caller in callers)
             {
-                if (exclude != null)
-                {
-                    var callerStr = caller.CallingSymbol.ToString();
-                    if (callerStr != null && callerStr.Contains(exclude))
-                    {
-                        continue;
-                    }
-                    if (caller.CallingSymbol.ContainingNamespace.ToString().Contains(exclude))
-                    {
-                        continue;
-                    }
-                }
+                if (ExcludeSymbol(caller.CallingSymbol, exclude)) continue;
                 Console.WriteLine($"{indent}{caller.CallingSymbol}");
                 await TraceCalls(solution, caller.CallingSymbol, depth + 1, exclude);
             }
@@ -192,6 +182,7 @@ namespace roslynplay
 
             private CallTraceNode()
             {
+                throw new InvalidOperationException("don't call this");
             }
 
             public CallTraceNode(ISymbol symbol, CallTraceNode calls)
