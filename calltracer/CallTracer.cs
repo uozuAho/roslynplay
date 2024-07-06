@@ -143,5 +143,62 @@ namespace roslynplay
                 await TraceCalls(solution, caller.CallingSymbol, depth + 1, exclude);
             }
         }
+
+        private static async Task TraceCalls2(
+            Solution solution,
+            CallTraceNode traceNode,
+            int depth = 0,
+            string? exclude = null)
+        {
+            if (depth > 20) throw new InvalidOperationException("too deep!");
+
+            var callers = await SymbolFinder.FindCallersAsync(traceNode.Symbol, solution);
+
+            foreach (var caller in callers)
+            {
+                if (ExcludeSymbol(caller.CallingSymbol, exclude))
+                    continue;
+                var callingNode = new CallTraceNode(caller.CallingSymbol, traceNode);
+                traceNode.Callers.Add(callingNode);
+                await TraceCalls2(solution, callingNode, depth + 1, exclude);
+            }
+        }
+
+        private static bool ExcludeSymbol(ISymbol symbol, string? exclude)
+        {
+            if (exclude == null) return false;
+
+            var callerStr = symbol.ToString();
+            
+            if (callerStr != null && callerStr.Contains(exclude))
+            {
+                return true;
+            }
+
+            var callingNamespace = symbol.ContainingNamespace.ToString();
+            if (callingNamespace != null && callingNamespace.Contains(exclude))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        class CallTraceNode
+        {
+            public ISymbol Symbol { get; init; }
+            public CallTraceNode Calls { get; }
+            public List<CallTraceNode> Callers { get; set; } = new();
+
+            private CallTraceNode()
+            {
+            }
+
+            public CallTraceNode(ISymbol symbol, CallTraceNode calls)
+            {
+                Symbol = symbol;
+                Calls = calls;
+            }
+        }
     }
 }
