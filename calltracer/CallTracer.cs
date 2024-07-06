@@ -48,20 +48,7 @@ namespace roslynplay
 
             Console.WriteLine("loading solution");
             var solution = await workspace.OpenSolutionAsync(slnFile);
-
-            var project = solution.Projects.First();
-            var compilation = await project.GetCompilationAsync();
-            if (compilation == null)
-            {
-                throw new InvalidOperationException($"couldn't load compilation for project {project.Name}");
-            }
-            Console.WriteLine($"using project: {project.Name}");
-
-            var typeSymbol = compilation.GetTypeByMetadataName(typeName);
-            if (typeSymbol == null)
-            {
-                throw new InvalidOperationException($"Couldn't find type {typeName}");
-            }
+            var typeSymbol = await FindTypeSymbol(typeName, solution);
 
             Console.WriteLine("finding usages");
 
@@ -76,6 +63,25 @@ namespace roslynplay
                 Console.WriteLine($"Traces of {member}");
                 await TraceCalls(solution, member, exclude: ".Tests.");
             }
+        }
+
+        private static async Task<INamedTypeSymbol> FindTypeSymbol(string typeName, Solution solution)
+        {
+            foreach (var project in solution.Projects)
+            {
+                var compilation = await project.GetCompilationAsync();
+
+                if (compilation == null)
+                    throw new InvalidOperationException($"couldn't load compilation for project {project.Name}");
+
+                var typeSymbol = compilation.GetTypeByMetadataName(typeName);
+                if (typeSymbol == null) continue;
+
+                Console.WriteLine($"found type in {project.Name}");
+                return typeSymbol;
+            }
+
+            throw new InvalidOperationException($"Couldn't find type {typeName}");
         }
 
         private static async Task TraceCalls(Solution solution, ISymbol symbol, int depth=0, string? exclude = null)
