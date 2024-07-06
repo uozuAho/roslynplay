@@ -1,25 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.7.34221.43
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "roslynplay", "roslynplay.csproj", "{42CE93A7-AC46-476E-AE04-F2774C47D0CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "roslynplay", "calltracer\roslynplay.csproj", "{0DA66D42-1C8E-4B07-AEC8-FE50B375481F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{42CE93A7-AC46-476E-AE04-F2774C47D0CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42CE93A7-AC46-476E-AE04-F2774C47D0CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42CE93A7-AC46-476E-AE04-F2774C47D0CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42CE93A7-AC46-476E-AE04-F2774C47D0CF}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E9A30CD7-E838-46E8-8DB2-9D38339876A3}
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0DA66D42-1C8E-4B07-AEC8-FE50B375481F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA66D42-1C8E-4B07-AEC8-FE50B375481F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA66D42-1C8E-4B07-AEC8-FE50B375481F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA66D42-1C8E-4B07-AEC8-FE50B375481F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -9,10 +9,11 @@ Usage: dotnet run <sln file> <fully qualified method name (namespace.type.method
 For example:
 
 ```sh
-dotnet run roslynplay.sln roslynplay.CallTracer.TraceCallsTo
+cd calltracer
+dotnet run ../roslynplay.sln roslynplay.CallTracer.TraceCallsTo
 
 # works with external types too:
-dotnet run roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered
+dotnet run ../roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered
 ```
 
 todo
