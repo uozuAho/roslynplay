@@ -31,8 +31,10 @@ dotnet run find roslynplay.csproj Finder.cs 508
 ```
 
 todo
-- add exclude args to tracer (exclude kai.integration)
-- grep first lines only (entry points)
-- find other call/overrides
-    - any way to find all overrides?
+- WIP: show usages of all members of a type
+    - works, but only shows usages for the given type target. Eg. if you want
+      to show usages of a method that has overloads:
+        - DoSomething(System.Data.Entity.DbContext)
+        - DoSomething(Microsoft.EntityFrameworkCore.DbContext)
+      only usages of the one you select will be shown.
 - detect recursive methods, prevent infinite recursion

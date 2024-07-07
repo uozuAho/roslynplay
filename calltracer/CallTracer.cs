@@ -42,10 +42,17 @@ namespace roslynplay
             var project = solution.Projects.Single(x => x.Name == projname);
             var document = project.Documents.Single(x => x.Name == filename);
             var symbol = await SymbolFinder.FindSymbolAtPositionAsync(document, position);
-            Console.WriteLine($"found symbol: {symbol}. Calls:");
+            Console.WriteLine($"found symbol: {symbol}. Getting all members of containing type");
 
-            var root = await BuildCallTree(symbol, solution);
-            PrintEntrypointTraces(root);
+            foreach (var sym in symbol.ContainingType.GetMembers())
+            {
+                var root = await BuildCallTree(sym, solution);
+                if (root.Callers.Count > 0)
+                {
+                    Console.WriteLine($"member {sym}:");
+                    PrintEntrypointTraces(root);
+                }
+            }
         }
 
         private static void PrintEntrypointTraces(CallTraceNode root)
