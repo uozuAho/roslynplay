@@ -31,6 +31,7 @@ dotnet run find roslynplay.csproj Finder.cs 508
 ```
 
 todo
+- calltracer: show line numbers
 - detect recursive methods, prevent infinite recursion
 - later: symbolfinder:
     - reverse trace
