@@ -31,6 +31,10 @@ dotnet run find roslynplay.csproj Finder.cs 508
 ```
 
 todo
+- WIP: analysers
+    - try making your own analysers:
+        - class/type should not reference/use another class/type
+        - project should not reference another project
 - calltracer: show line numbers
 - detect recursive methods, prevent infinite recursion
 - later: symbolfinder:
