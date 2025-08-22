@@ -1,43 +1,5 @@
-# C# call tracer
+# Roslyn experiments/playground
 
-Little project to learn about roslyn & related tools.
-
-Goal: find all paths to a given method call, from all program entry points.
-
-Example usages
-
-```sh
-cd calltracer
-## TRACE CALLS
-# by fully qualified method name
-dotnet run trace ../roslynplay.sln roslynplay.CallTracer.TraceCallsTo
-# by sln, project, file, character position
-dotnet run trace ../roslynplay.sln roslynplay CallTracer.cs 871
-
-# works with external types too:
-dotnet run trace ../roslynplay.sln Microsoft.Build.Locator.MSBuildLocator.IsRegistered
-dotnet run trace ../roslynplay.sln MoreLinq.MoreEnumerable.Choose
-
-# extension types are found in their namespaces:
-dotnet run trace ../roslynplay.sln mylib.MyStringExtensions.AddChar  # works
-dotnet run trace ../roslynplay.sln System.String.AddChar             # String.AddChar not found
-
-## FIND SYMBOLS
-dotnet run find roslynplay.csproj Program.cs 198  # 198 = character position
-> roslynplay.CallTracer.RunFromArgs(string[])
-
-dotnet run find roslynplay.csproj Finder.cs 508
-> System.Console.WriteLine(object?)
-```
-
-todo
-- WIP: analysers
-    - try making your own analysers:
-        - class/type should not reference/use another class/type
-        - project should not reference another project
-- calltracer: show line numbers
-- detect recursive methods, prevent infinite recursion
-- later: symbolfinder:
-    - reverse trace
-    - eliminate dupes
-    - show project(s) of entrypoints
+- analysers:  create your own analysers (for static analysis and more)
+- calltracer: ... trace calls
+- mylib:      Just here as sample code for the other projects to use.
